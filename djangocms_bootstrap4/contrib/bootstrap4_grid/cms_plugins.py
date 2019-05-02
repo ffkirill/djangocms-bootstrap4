@@ -15,7 +15,17 @@ from .models import (
 )
 
 
-class Bootstrap4GridContainerPlugin(CMSPluginBase):
+class InlineBgStyleMixin:
+    @staticmethod
+    def append_background_image(instance):
+        if instance and instance.bg_image:
+            bg_url = instance.bg_image.url
+            style = "background-image: url('{}');  {}".format(
+                bg_url, instance.attributes.get('style'))
+            instance.attributes['style'] = style
+
+
+class Bootstrap4GridContainerPlugin(InlineBgStyleMixin, CMSPluginBase):
     """
     Layout > Grid: "Container" Plugin
     https://getbootstrap.com/docs/4.0/layout/grid/
@@ -30,6 +40,7 @@ class Bootstrap4GridContainerPlugin(CMSPluginBase):
         (None, {
             'fields': (
                 'container_type',
+                'bg_image',
             )
         }),
         (_('Advanced settings'), {
@@ -47,13 +58,14 @@ class Bootstrap4GridContainerPlugin(CMSPluginBase):
             instance.attributes.get('class'),
         ])
         instance.attributes['class'] = classes
+        self.append_background_image(instance)
 
         return super(Bootstrap4GridContainerPlugin, self).render(
             context, instance, placeholder
         )
 
 
-class Bootstrap4GridRowPlugin(CMSPluginBase):
+class Bootstrap4GridRowPlugin(InlineBgStyleMixin, CMSPluginBase):
     """
     Layout > Grid: "Row" Plugin
     https://getbootstrap.com/docs/4.0/layout/grid/
@@ -72,6 +84,7 @@ class Bootstrap4GridRowPlugin(CMSPluginBase):
             'fields': (
                 'create',
                 ('vertical_alignment', 'horizontal_alignment'),
+                'bg_image',
             )
         }),
         (_('Advanced settings'), {
@@ -112,13 +125,14 @@ class Bootstrap4GridRowPlugin(CMSPluginBase):
             instance.attributes.get('class'),
         ])
         instance.attributes['class'] = classes
+        self.append_background_image(instance)
 
         return super(Bootstrap4GridRowPlugin, self).render(
             context, instance, placeholder
         )
 
 
-class Bootstrap4GridColumnPlugin(CMSPluginBase):
+class Bootstrap4GridColumnPlugin(InlineBgStyleMixin, CMSPluginBase):
     """
     Layout > Grid: "Column" Plugin
     https://getbootstrap.com/docs/4.0/layout/grid/
@@ -139,6 +153,7 @@ class Bootstrap4GridColumnPlugin(CMSPluginBase):
         (None, {
             'fields': (
                 ('column_type', 'column_alignment'),
+                'bg_image',
             )
         }),
         (_('Responsive settings'), {
@@ -173,6 +188,7 @@ class Bootstrap4GridColumnPlugin(CMSPluginBase):
             instance.attributes.get('class'),
         ])
         instance.attributes['class'] = attr_classes
+        self.append_background_image(instance)
 
         return super(Bootstrap4GridColumnPlugin, self).render(
             context, instance, placeholder

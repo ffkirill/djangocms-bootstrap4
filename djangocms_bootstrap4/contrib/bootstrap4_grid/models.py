@@ -16,6 +16,7 @@ from djangocms_bootstrap4.fields import (
     AttributesField, IntegerRangeField, TagTypeField,
 )
 from djangocms_bootstrap4.helpers import mark_safe_lazy
+from filer.fields.image import FilerImageField
 
 from .constants import (
     GRID_COLUMN_ALIGNMENT_CHOICES, GRID_COLUMN_CHOICES, GRID_CONTAINER_CHOICES,
@@ -24,8 +25,19 @@ from .constants import (
 )
 
 
+class BackgroundImageSettings(models.Model):
+    class Meta:
+        abstract = True
+    bg_image = FilerImageField(
+        verbose_name=_('Background image'),
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
+
 @python_2_unicode_compatible
-class Bootstrap4GridContainer(CMSPlugin):
+class Bootstrap4GridContainer(BackgroundImageSettings, CMSPlugin):
     """
     Layout > Grid: "Container" Plugin
     https://getbootstrap.com/docs/4.0/layout/grid/
@@ -55,7 +67,7 @@ class Bootstrap4GridContainer(CMSPlugin):
 
 
 @python_2_unicode_compatible
-class Bootstrap4GridRow(CMSPlugin):
+class Bootstrap4GridRow(BackgroundImageSettings, CMSPlugin):
     """
     Layout > Grid: "Row" Plugin
     https://getbootstrap.com/docs/4.0/layout/grid/
@@ -111,7 +123,7 @@ class Bootstrap4GridRow(CMSPlugin):
 
 
 @python_2_unicode_compatible
-class Bootstrap4GridColumn(CMSPlugin):
+class Bootstrap4GridColumn(BackgroundImageSettings, CMSPlugin):
     """
     Layout > Grid: "Column" Plugin
     https://getbootstrap.com/docs/4.0/layout/grid/
